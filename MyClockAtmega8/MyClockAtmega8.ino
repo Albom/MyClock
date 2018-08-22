@@ -1,4 +1,3 @@
-
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <avr/pgmspace.h>
@@ -25,7 +24,7 @@ void setup() {
 
   buildFont3();
 
-  analogWrite(1, 255);
+  analogWrite(3, 150);
 
   currentMode = 0;
 
@@ -93,18 +92,21 @@ void getTime() {
   Wire.write(0);
   Wire.endTransmission();
 
-  Wire.requestFrom(RTC_ADDR, 7);
+  if (Wire.requestFrom(RTC_ADDR, 7) == 7) {
 
-  for (int8_t i = 0; i < 7; i++) {
-    currentTime[i] = Wire.read();
+    for (int8_t i = 0; i < 7; i++) {
+      currentTime[i] = Wire.read();
+    }
+
   }
+
 }
 
 bool compareTime() {
   for (int8_t i = 0; i < 7; i++) {
     if (displayTime[i] != currentTime[i]) {
       for (int8_t j = 0; j < 7; j++) {
-        displayTime[i] = currentTime[i];
+        displayTime[j] = currentTime[j];
       }
       return false;
     }
@@ -116,8 +118,10 @@ bool compareTime() {
 
 const char days[] PROGMEM = { "  SUMOTUWETHFRSA"};
 
+
 void loop() {
 
+ unsigned long times[] = {15000, 5000};
   unsigned long t = millis();
 
   if (t_prev > t) {
@@ -125,13 +129,15 @@ void loop() {
     return;
   };
 
-  if (t - t_prev > 5000) {
+  if (t - t_prev > times[currentMode]) {
     t_prev = t;
     currentMode++;
     if (currentMode > 1) {
       currentMode = 0;
     }
   }
+
+
 
   getTime();
 
@@ -158,7 +164,7 @@ void loop() {
       printDigit3(13, displayTime[5] & 0x0F);
 
       lcd.setCursor(7, 1);
-      int offset = ((displayTime[3] & 0x0F) - 1) * 2 ;
+      int offset = ((displayTime[3] & 0x0F) ) * 2 ;
       lcd.write(pgm_read_byte_near(& days[offset]));
       lcd.write(pgm_read_byte_near(& days[offset + 1]));
 

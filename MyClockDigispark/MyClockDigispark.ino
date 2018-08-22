@@ -104,7 +104,7 @@ bool compareTime() {
   for (int8_t i = 0; i < 7; i++) {
     if (displayTime[i] != currentTime[i]) {
       for (int8_t j = 0; j < 7; j++) {
-        displayTime[i] = currentTime[i];
+        displayTime[j] = currentTime[j];
       }
       return false;
     }
