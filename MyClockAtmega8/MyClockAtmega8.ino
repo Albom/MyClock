@@ -116,12 +116,12 @@ bool compareTime() {
 
 
 
-const char days[] PROGMEM = { "  SUMOTUWETHFRSA"};
+const char days[] PROGMEM = {"  SUMOTUWETHFRSA"};
 
 
 void loop() {
 
- unsigned long times[] = {15000, 5000};
+  unsigned long times[] = {15000, 5000};
   unsigned long t = millis();
 
   if (t_prev > t) {
@@ -164,7 +164,7 @@ void loop() {
       printDigit3(13, displayTime[5] & 0x0F);
 
       lcd.setCursor(7, 1);
-      int offset = ((displayTime[3] & 0x0F) ) * 2 ;
+      int offset = displayTime[3]  * 2 ;
       lcd.write(pgm_read_byte_near(& days[offset]));
       lcd.write(pgm_read_byte_near(& days[offset + 1]));
 
