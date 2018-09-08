@@ -1,3 +1,4 @@
+
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <avr/pgmspace.h>
@@ -6,6 +7,7 @@
 #define RTC_ADDR  0x68
 
 LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
+
 
 #define SPACE  ' '
 
@@ -24,7 +26,7 @@ void setup() {
 
   buildFont3();
 
-  analogWrite(3, 150);
+  analogWrite(10, 40); // 40 - night, 150 - day
 
   currentMode = 0;
 
@@ -118,10 +120,10 @@ bool compareTime() {
 
 const char days[] PROGMEM = {"  SUMOTUWETHFRSA"};
 
-
+int bl = 0;
 void loop() {
 
-  unsigned long times[] = {15000, 5000};
+  unsigned long times[] = {15000, 5000, 5000};
   unsigned long t = millis();
 
   if (t_prev > t) {
@@ -136,8 +138,6 @@ void loop() {
       currentMode = 0;
     }
   }
-
-
 
   getTime();
 
