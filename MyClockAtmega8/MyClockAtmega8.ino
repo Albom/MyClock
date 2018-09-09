@@ -5,6 +5,7 @@
 
 #define LCD_ADDR  0x3F
 #define RTC_ADDR  0x68
+#define SENSOR_ADDR 0x5C
 
 LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 
@@ -117,14 +118,42 @@ bool compareTime() {
 }
 
 
+void readSensor(int* temp, int* hum) {
+
+  Wire.beginTransmission(SENSOR_ADDR);
+  Wire.write(0);
+  Wire.endTransmission();
+  delay(10);
+
+  Wire.beginTransmission(SENSOR_ADDR);
+  Wire.write(3);
+  Wire.write(0);
+  Wire.write(4);
+  Wire.endTransmission();
+  delay(2);
+
+  if (Wire.requestFrom(SENSOR_ADDR, 8) == 8) {
+
+    byte c[8];
+    for (int8_t i = 0; i < 8; i++) {
+      c[i] = Wire.read();
+    }
+
+    *hum = c[2] * 256 + c[3];
+    *temp = c[4] * 256 + c[5];
+
+  }
+}
+
 
 const char days[] PROGMEM = {"  SUMOTUWETHFRSA"};
 
 int bl = 0;
 void loop() {
 
-  unsigned long times[] = {15000, 5000, 5000};
+  unsigned long times[] = {15000, 5000, 3000, 3000};
   unsigned long t = millis();
+  int hum, temp;
 
   if (t_prev > t) {
     t_prev = t;
@@ -133,8 +162,9 @@ void loop() {
 
   if (t - t_prev > times[currentMode]) {
     t_prev = t;
+    lcd.clear();
     currentMode++;
-    if (currentMode > 1) {
+    if (currentMode > 3) {
       currentMode = 0;
     }
   }
@@ -169,6 +199,46 @@ void loop() {
       lcd.write(pgm_read_byte_near(& days[offset + 1]));
 
     }
+
+    if (currentMode == 2) {
+
+
+      readSensor(&temp, &hum);
+
+      printDigit3(2, temp / 100);
+      printDigit3(6, temp % 100 / 10);
+      printDigit3(11, temp % 10);
+
+      lcd.setCursor(9, 1);
+      lcd.write(0xA1);
+
+      lcd.setCursor(15, 0);
+      lcd.write(0x6F);
+
+      delay(2000);
+
+    }
+
+
+    if (currentMode == 3) {
+
+      readSensor(&temp, &hum);
+
+      printDigit3(0, hum / 100);
+      printDigit3(4, hum % 100 / 10);
+      printDigit3(9, hum % 10);
+
+      lcd.setCursor(7, 1);
+      lcd.write(0xA1);
+
+      lcd.setCursor(13, 0);
+      lcd.write(0x25);
+
+      delay(2000);
+
+    }
+
+
 
   }
 
