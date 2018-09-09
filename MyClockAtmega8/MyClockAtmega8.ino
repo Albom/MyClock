@@ -70,7 +70,8 @@ const char digits[] PROGMEM  = {7, 0, 1, 2, 3, 4, // 0
                                 7, 5, 5, 2, 6, 4, // 6
                                 0, 5, 1, SPACE, 2, SPACE, // 7
                                 7, 5, 1, 2, 6, 4, // 8
-                                2, 5, 1, 3, 6, 4 // 9
+                                2, 5, 1, 3, 6, 4, // 9
+                                SPACE, SPACE, SPACE, SPACE, SPACE, SPACE // 10 - white
                                };
 
 void printDigit3(byte posX, byte digit) {
@@ -162,7 +163,8 @@ void loop() {
 
   if (t - t_prev > times[currentMode]) {
     t_prev = t;
-    lcd.clear();
+ //   lcd.clear();
+
     currentMode++;
     if (currentMode > 3) {
       currentMode = 0;
@@ -205,14 +207,17 @@ void loop() {
 
       readSensor(&temp, &hum);
 
-      printDigit3(2, temp / 100);
-      printDigit3(6, temp % 100 / 10);
-      printDigit3(11, temp % 10);
+      printDigit3(0, temp / 100);
+      printDigit3(4, temp % 100 / 10);
+      printDigit3(9, temp % 10);
+      printDigit3(13, 10);
 
-      lcd.setCursor(9, 1);
+      lcd.setCursor(7, 1);
       lcd.write(0xA1);
+      lcd.setCursor(8, 1);
+      lcd.write(SPACE);
 
-      lcd.setCursor(15, 0);
+      lcd.setCursor(13, 0);
       lcd.write(0x6F);
 
       delay(2000);
@@ -227,9 +232,12 @@ void loop() {
       printDigit3(0, hum / 100);
       printDigit3(4, hum % 100 / 10);
       printDigit3(9, hum % 10);
+      printDigit3(13, 10);
 
       lcd.setCursor(7, 1);
       lcd.write(0xA1);
+      lcd.setCursor(8, 1);
+      lcd.write(SPACE);
 
       lcd.setCursor(13, 0);
       lcd.write(0x25);
