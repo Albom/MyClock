@@ -7,6 +7,8 @@
 #define RTC_ADDR  0x68
 #define SENSOR_ADDR 0x5C
 
+#define SHOW_SECONDS 0
+
 LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 
 
@@ -27,7 +29,7 @@ void setup() {
 
   buildFont3();
 
-  analogWrite(10, 40); // 40 - night, 150 - day
+  analogWrite(10, 30); // 30 - night, 150 - day
 
   currentMode = 0;
 
@@ -163,7 +165,7 @@ void loop() {
 
   if (t - t_prev > times[currentMode]) {
     t_prev = t;
- //   lcd.clear();
+    //   lcd.clear();
 
     currentMode++;
     if (currentMode > 3) {
@@ -182,10 +184,18 @@ void loop() {
       printDigit3(9, displayTime[1] >> 4);
       printDigit3(13, displayTime[1] & 0x0F);
 
+#if SHOW_SECONDS
       lcd.setCursor(7, 1);
       lcd.print(displayTime[0] >> 4);
       lcd.setCursor(8, 1);
       lcd.print(displayTime[0] & 0x0F);
+#else
+      lcd.setCursor(8, 0);
+      lcd.write(displayTime[0] % 2 ? 0xA1 : SPACE);
+      lcd.setCursor(7, 1);
+      lcd.write(SPACE);
+      lcd.write(displayTime[0] % 2 ? 0xA1 : SPACE);
+#endif
     }
 
     if (currentMode == 1) {
@@ -200,10 +210,15 @@ void loop() {
       lcd.write(pgm_read_byte_near(& days[offset]));
       lcd.write(pgm_read_byte_near(& days[offset + 1]));
 
+#if SHOW_SECONDS
+#else
+      lcd.setCursor(8, 0);
+      lcd.write(SPACE);
+#endif
+
     }
 
     if (currentMode == 2) {
-
 
       readSensor(&temp, &hum);
 
@@ -220,10 +235,12 @@ void loop() {
       lcd.setCursor(13, 0);
       lcd.write(0x6F);
 
+      lcd.setCursor(13, 1);
+      lcd.write(SPACE);
+
       delay(2000);
 
     }
-
 
     if (currentMode == 3) {
 
@@ -240,6 +257,9 @@ void loop() {
       lcd.write(SPACE);
 
       lcd.setCursor(13, 0);
+      lcd.write(SPACE);
+
+      lcd.setCursor(13, 1);
       lcd.write(0x25);
 
       delay(2000);
