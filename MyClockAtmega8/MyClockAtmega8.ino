@@ -8,6 +8,7 @@
 #define SENSOR_ADDR 0x5C
 
 #define SHOW_SECONDS 0
+#define SERIAL_ENABLE 0
 
 LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 
@@ -29,11 +30,13 @@ void setup() {
 
   buildFont3();
 
-  analogWrite(10, 30); // 30 - night, 150 - day
-
   currentMode = 0;
 
   t_prev = millis();
+
+#if SERIAL_ENABLE
+  Serial.begin(9600);
+#endif
 
 }
 
@@ -176,6 +179,12 @@ void loop() {
   getTime();
 
   if (!compareTime()) {
+
+    int lumin = analogRead(0);
+#if SERIAL_ENABLE
+    Serial.println(lumin);
+#endif
+    analogWrite(10, lumin < 400  ? 30 : 150); // 30 - night, 150 - day
 
     if (currentMode == 0) {
 
