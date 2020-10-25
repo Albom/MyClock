@@ -25,7 +25,7 @@ void setup() {
 
   Wire.begin();
 
-  lcd.begin();
+  lcd.begin(16, 2);
   lcd.backlight();
 
   buildFont3();
@@ -280,4 +280,3 @@ void loop() {
   }
 
 }
-

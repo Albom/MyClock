@@ -57,7 +57,7 @@ void setup() {
 
   analogWrite(3, 150);
 
-  lcd.begin();
+  lcd.begin(16, 2);
   lcd.backlight();
   lcd.clear();
 
