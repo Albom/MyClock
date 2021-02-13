@@ -113,6 +113,15 @@ bool compareTime() {
 }
 
 
+void pt(byte b1, byte b2) {
+  printDigit3(0, b1 >> 4);
+  printDigit3(4, b1 & 0x0F);
+  printDigit3(9, b2 >> 4);
+  printDigit3(13, b2 & 0x0F);
+
+  lcd.setCursor(7, 1);
+  
+}
 
 const char days[] PROGMEM = { "  SUMOTUWETHFRSA"};
 
@@ -139,12 +148,8 @@ void loop() {
 
     if (currentMode == 0) {
 
-      printDigit3(0, displayTime[2] >> 4);
-      printDigit3(4, displayTime[2] & 0x0F);
-      printDigit3(9, displayTime[1] >> 4);
-      printDigit3(13, displayTime[1] & 0x0F);
+      pt(displayTime[2], displayTime[1]);
 
-      lcd.setCursor(7, 1);
       lcd.print(displayTime[0] >> 4);
       lcd.setCursor(8, 1);
       lcd.print(displayTime[0] & 0x0F);
@@ -152,12 +157,8 @@ void loop() {
 
     if (currentMode == 1) {
 
-      printDigit3(0, displayTime[4] >> 4);
-      printDigit3(4, displayTime[4] & 0x0F);
-      printDigit3(9, displayTime[5] >> 4);
-      printDigit3(13, displayTime[5] & 0x0F);
+      pt(displayTime[4], displayTime[5]);
 
-      lcd.setCursor(7, 1);
       int offset = ((displayTime[3] & 0x0F) - 1) * 2 ;
       lcd.write(pgm_read_byte_near(& days[offset]));
       lcd.write(pgm_read_byte_near(& days[offset + 1]));
@@ -167,4 +168,3 @@ void loop() {
   }
 
 }
-
